@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ title }} - ComicCraft
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/static/css/style.css"
+    >
+
+</head>
+
+
+<body>
+
+<div class="page-shell preview-shell">
+
+
+    <header class="preview-header">
+
+        <div>
+
+            <div class="brand">
+                COMICCRAFT
+            </div>
+
+            <h1>
+                {{ title }}
+            </h1>
+
+        </div>
+
+
+        <a
+            class="secondary-btn"
+            href="/"
+        >
+
+            Create Another
+
+        </a>
+
+    </header>
+
+
+    <section class="comic-grid">
+
+        {% for panel in layout %}
+
+        <article class="panel-card">
+
+            <div class="panel-title">
+
+                <span>
+                    Panel {{ panel.panel_number }}
+                </span>
+
+                <h2>
+                    {{ panel.title }}
+                </h2>
+
+            </div>
+
+
+            <img
+                class="panel-image"
+                src="{{ panel.image_path }}"
+                alt="Comic panel {{ panel.panel_number }}"
+            >
+
+
+            <p class="scene-description">
+
+                {{ panel.scene_description }}
+
+            </p>
+
+
+            {% if panel.caption %}
+
+            <div class="caption-box">
+
+                {{ panel.caption }}
+
+            </div>
+
+            {% endif %}
+
+
+            <div class="story-copy">
+
+                <h3>
+                    Narration
+                </h3>
+
+                <p>
+                    {{ panel.narration }}
+                </p>
+
+
+                {% if panel.dialogue %}
+
+                <h3>
+                    Dialogue
+                </h3>
+
+                <p class="dialogue">
+
+                    “{{ panel.dialogue }}”
+
+                </p>
+
+                {% endif %}
+
+            </div>
+
+        </article>
+
+        {% endfor %}
+
+    </section>
+
+
+    <section class="download-card">
+
+        <h2>
+            Your comic is ready 🎉
+        </h2>
+
+        <p>
+            Download all {{ layout|length }}
+            panels with their story text as a PDF.
+        </p>
+
+
+        <button
+            class="primary-btn"
+            id="downloadBtn"
+
+            data-download-url="/download/{{ pdf_filename }}"
+
+            data-success-url="/export-success?filename={{ pdf_filename }}"
+        >
+
+            Download Your Comic as PDF
+
+        </button>
+
+
+        <p
+            id="downloadStatus"
+            class="download-status"
+        ></p>
+
+    </section>
+
+</div>
+
+
+<script>
+
+const button =
+    document.getElementById(
+        "downloadBtn"
+    );
+
+
+const statusText =
+    document.getElementById(
+        "downloadStatus"
+    );
+
+
+button.addEventListener(
+    "click",
+    async () => {
+
+        button.disabled = true;
+
+        statusText.textContent =
+            "Preparing your PDF...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    button.dataset.downloadUrl
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "PDF download failed."
+                );
+
+            }
+
+
+            const blob =
+                await response.blob();
+
+
+            const url =
+                URL.createObjectURL(
+                    blob
+                );
+
+
+            const anchor =
+                document.createElement(
+                    "a"
+                );
+
+
+            anchor.href = url;
+
+            anchor.download =
+                "{{ pdf_filename }}";
+
+
+            document.body.appendChild(
+                anchor
+            );
+
+
+            anchor.click();
+
+
+            anchor.remove();
+
+
+            URL.revokeObjectURL(
+                url
+            );
+
+
+            window.location.href =
+                button.dataset.successUrl;
+
+        }
+
+        catch (error) {
+
+            statusText.textContent =
+                error.message;
+
+            button.disabled = false;
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

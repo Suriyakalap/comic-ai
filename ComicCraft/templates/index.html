@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        ComicCraft - Create Your Comic
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/static/css/style.css"
+    >
+
+</head>
+
+<body>
+
+<div class="page-shell">
+
+    <main class="hero-card">
+
+        <div class="brand">
+            COMICCRAFT
+        </div>
+
+        <h1>
+            Turn your idea into a comic.
+        </h1>
+
+        <p class="subtitle">
+
+            Create a {{ panel_count }}-panel story
+            with AI-generated narration,
+            dialogue and illustrations.
+
+        </p>
+
+
+        {% if error %}
+
+        <div class="error-box">
+
+            <strong>
+                Generation failed
+            </strong>
+
+            <p>
+                {{ error }}
+            </p>
+
+        </div>
+
+        {% endif %}
+
+
+        <form
+            action="/generate"
+            method="post"
+            class="comic-form"
+        >
+
+            <label for="story_prompt">
+                Story Prompt
+            </label>
+
+            <textarea
+                id="story_prompt"
+                name="story_prompt"
+                required
+                placeholder="Example: A brave fox explores an enchanted forest."
+            >{{ form.story_prompt if form else "" }}</textarea>
+
+
+            <div class="two-col">
+
+                <div>
+
+                    <label for="character_name">
+                        Main Character Name
+                    </label>
+
+                    <input
+                        id="character_name"
+                        name="character_name"
+                        required
+                        value="{{ form.character_name if form else '' }}"
+                        placeholder="Milo"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label for="setting">
+                        Setting
+                    </label>
+
+                    <select
+                        id="setting"
+                        name="setting"
+                    >
+
+                        {% for item in [
+                            "Forest",
+                            "School",
+                            "City",
+                            "Space",
+                            "Fantasy Kingdom"
+                        ] %}
+
+                        <option
+                            value="{{ item }}"
+                            {% if form and form.setting == item %}
+                            selected
+                            {% endif %}
+                        >
+
+                            {{ item }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="two-col">
+
+                <div>
+
+                    <label for="tone">
+                        Story Tone
+                    </label>
+
+                    <select
+                        id="tone"
+                        name="tone"
+                    >
+
+                        {% for item in [
+                            "Light-hearted",
+                            "Dramatic",
+                            "Poetic",
+                            "Funny",
+                            "Adventurous"
+                        ] %}
+
+                        <option
+                            value="{{ item }}"
+                            {% if form and form.tone == item %}
+                            selected
+                            {% endif %}
+                        >
+
+                            {{ item }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div>
+
+                    <label for="art_style">
+                        Art Style
+                    </label>
+
+                    <select
+                        id="art_style"
+                        name="art_style"
+                    >
+
+                        {% for item in [
+                            "Comic book",
+                            "Anime",
+                            "Pixel art",
+                            "Realistic",
+                            "Watercolor"
+                        ] %}
+
+                        <option
+                            value="{{ item }}"
+                            {% if form and form.art_style == item %}
+                            selected
+                            {% endif %}
+                        >
+
+                            {{ item }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="primary-btn"
+                type="submit"
+            >
+
+                Generate My Comic ✨
+
+            </button>
+
+        </form>
+
+
+        {% if mock_mode %}
+
+        <p class="mode-note">
+
+            Test mode is ON.
+            No external AI calls are required.
+
+        </p>
+
+        {% endif %}
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
